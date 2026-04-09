@@ -3,13 +3,21 @@ DOCUMENT GENERATOR
 ==================
 
 This script automatically generates PDF files from Word templates and client data.
+Compatible with macOS and Windows.
 
-HOW TO RUN:
------------
+HOW TO RUN (macOS):
+-------------------
 1. Open Terminal
-2. cd /Users/rhbdigital/Downloads/amy
-3. source venv/bin/activate  (activate virtual environment)
+2. cd /Users/YOUR_USERNAME/Downloads/project-dir
+3. source venv/bin/activate
 4. python3 main.py
+
+HOW TO RUN (Windows):
+---------------------
+1. Open Command Prompt
+2. cd C:\Users\YOUR_USERNAME\Downloads\project-dir
+3. venv\Scripts\activate
+4. python main.py
 
 WHAT YOU NEED:
 --------------
@@ -18,11 +26,12 @@ WHAT YOU NEED:
 - LibreOffice installed (for converting DOCX to PDF)
 - Python 3.7+ with pandas and docxtpl installed
 
-For detailed setup instructions, see: SETUP.md
+For detailed setup instructions, see: OPERATING.md
 """
 
 from __future__ import annotations
 
+import os
 import re
 import sys
 import shutil
@@ -117,19 +126,36 @@ def render_docx(template_path: Path, context: Dict[str, Any], output_docx_path: 
 
 def find_soffice() -> Optional[str]:
     """
-    Try to find LibreOffice's 'soffice' command on macOS.
+    Try to find LibreOffice's 'soffice' command on macOS or Windows.
     """
-    candidates = [
-        shutil.which("soffice"),
+    candidates = []
+    
+    # Check PATH first (works on all systems)
+    soffice_in_path = shutil.which("soffice")
+    if soffice_in_path:
+        candidates.append(soffice_in_path)
+    
+    # macOS paths
+    candidates.extend([
         "/Applications/LibreOffice.app/Contents/MacOS/soffice",
         "/opt/homebrew/bin/soffice",
         "/usr/local/bin/soffice",
-    ]
-
+    ])
+    
+    # Windows paths
+    candidates.extend([
+        "C:\\Program Files\\LibreOffice\\program\\soffice.exe",
+        "C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe",
+    ])
+    
     for candidate in candidates:
-        if candidate and Path(candidate).exists():
-            return str(candidate)
-
+        try:
+            if candidate and Path(candidate).exists():
+                return str(candidate)
+        except (OSError, ValueError):
+            # Handle invalid paths that Path() might reject
+            continue
+    
     return None
 
 
@@ -137,7 +163,7 @@ def export_docx_to_pdf(input_docx: Path, output_pdf: Path) -> None:
     """
     Convert DOCX to PDF using LibreOffice in headless mode.
 
-    This works well on macOS if LibreOffice is installed.
+    Works on both macOS and Windows if LibreOffice is installed.
     """
     soffice = find_soffice()
     if not soffice:
