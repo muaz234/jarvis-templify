@@ -74,8 +74,38 @@ def sanitize_filename(name: str) -> str:
 
 
 def ensure_dirs() -> None:
+    """
+    Create required directories if they don't exist.
+    """
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     TEMP_DOCX_DIR.mkdir(parents=True, exist_ok=True)
+    TEMPLATE_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def validate_config() -> None:
+    """
+    Validate that all required configuration files and directories exist.
+    Raises exception if critical files are missing.
+    """
+    # Check if clients.xlsx exists
+    if not CLIENT_FILE.exists():
+        raise FileNotFoundError(
+            f"\n[CRITICAL ERROR]\n"
+            f"Excel file not found: {CLIENT_FILE}\n\n"
+            f"Please ensure you have created 'clients.xlsx' in the project directory.\n"
+            f"Expected location: {CLIENT_FILE}\n"
+        )
+    
+    # Check if templates directory is empty (warning only)
+    if not TEMPLATE_DIR.exists():
+        print(f"[WARNING] Templates directory not found. Creating: {TEMPLATE_DIR}")
+        TEMPLATE_DIR.mkdir(parents=True, exist_ok=True)
+    
+    template_count = len(list(TEMPLATE_DIR.glob("*.docx")))
+    if template_count == 0:
+        print(f"[WARNING] No DOCX templates found in: {TEMPLATE_DIR}")
+        print(f"Please add your Word template files (.docx) to this folder.")
+        print(f"Example filenames: BNI_Statement.docx, AA_Flight.docx, Agoda_Hotel.docx\n")
 
 
 def load_clients(xlsx_path: Path) -> pd.DataFrame:
@@ -206,6 +236,12 @@ def export_docx_to_pdf(input_docx: Path, output_pdf: Path) -> None:
 # =========================
 def main() -> int:
     ensure_dirs()
+    
+    try:
+        validate_config()
+    except FileNotFoundError as exc:
+        print(str(exc))
+        return 1
 
     try:
         df = load_clients(CLIENT_FILE)
