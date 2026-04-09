@@ -79,7 +79,7 @@ Make sure you have:
 2. Copy and paste these commands:
 
 ```bash
-cd /Users/YOUR_USERNAME/Downloads/amy
+cd /Users/YOUR_USERNAME/Downloads/project-dir
 python3 -m venv venv
 source venv/bin/activate
 pip install pandas openpyxl python-docx lxml pillow
@@ -90,7 +90,7 @@ pip install pandas openpyxl python-docx lxml pillow
 2. Copy and paste these commands:
 
 ```bash
-cd C:\Users\YOUR_USERNAME\Downloads\amy
+cd C:\Users\YOUR_USERNAME\Downloads\project-dir
 python -m venv venv
 venv\Scripts\activate
 pip install pandas openpyxl python-docx lxml pillow
@@ -183,14 +183,14 @@ Your account is active.
 
 **For Mac:**
 ```bash
-cd /Users/YOUR_USERNAME/Downloads/amy
+cd /Users/YOUR_USERNAME/Downloads/project-dir
 source venv/bin/activate
 python3 main.py
 ```
 
 **For Windows:**
 ```bash
-cd C:\Users\YOUR_USERNAME\Downloads\amy
+cd C:\Users\YOUR_USERNAME\Downloads\project-dir
 venv\Scripts\activate
 python main.py
 ```
@@ -217,7 +217,7 @@ Check your `output/` folder - your PDFs are there!
 Your folder should look like this:
 
 ```
-amy/
+project-dir/
 ├── main.py                          ← The script ✅
 ├── clients.xlsx                     ← Your data ✅
 ├── templates/                       ← Your Word files ✅
